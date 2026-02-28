@@ -54,6 +54,7 @@ export default function Footer() {
           <div className="mt-4 flex gap-6 sm:mt-0 text-xs">
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+            <Link href="/dashboard" className="hover:text-white transition-colors text-slate-500">Admin Portal</Link>
           </div>
         </div>
       </div>
