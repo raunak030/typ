@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
+import fs from 'fs';
+import path from 'path';
 
-const publicationsData = [
+const dataFilePath = path.join(process.cwd(), 'data', 'publications.json');
+
+const defaultPublicationsData = [
   {
     id: 1,
     type: "policy-brief",
@@ -36,120 +40,80 @@ const publicationsData = [
     description: "Our flagship annual publication synthesizing data from over 50,000 respondents across 28 states, outlining key policy priorities for the upcoming legislative session.",
     author: "The Yuva Panchayat Research Desk",
     imageSeed: "report3"
-  },
-  {
-    id: 4,
-    type: "issue-brief",
-    typeLabel: "Issue Brief",
-    topic: "environment",
-    date: "Jul 2025",
-    title: "Climate Resilience Policy for Coastal Communities",
-    link: "/publications/climate-resilience-policy",
-    description: "A comprehensive review of adaptation strategies and infrastructure requirements for vulnerable populations in India's coastal states.",
-    author: "Environmental Policy Group",
-    imageSeed: "report4"
-  },
-  {
-    id: 5,
-    type: "data-analysis",
-    typeLabel: "Data Analysis",
-    topic: "education",
-    date: "Jun 2025",
-    title: "Post-Pandemic Education Outcomes in Rural Districts",
-    link: "/publications/education-outcomes-rural",
-    description: "Analyzing the long-term impact of remote learning on standardized test scores and dropout rates in rural educational institutions.",
-    author: "Education Task Force",
-    imageSeed: "report5"
-  },
-  {
-    id: 6,
-    type: "white-paper",
-    typeLabel: "White Paper",
-    topic: "technology",
-    date: "May 2025",
-    title: "Governance Frameworks for Artificial Intelligence",
-    link: "/publications/ai-governance-frameworks",
-    description: "Proposing regulatory structures that balance innovation with ethical considerations and data privacy in the rapidly evolving AI sector.",
-    author: "Technology & Society Initiative",
-    imageSeed: "report6"
-  },
-  {
-    id: 7,
-    type: "policy-brief",
-    typeLabel: "Policy Brief",
-    topic: "education",
-    date: "Apr 2025",
-    title: "Healthcare Access for Marginalized Youth",
-    link: "/publications/healthcare-access",
-    description: "Evaluating the effectiveness of current public health initiatives in reaching marginalized youth populations in semi-urban areas.",
-    author: "Health Policy Unit",
-    imageSeed: "report7"
-  },
-  {
-    id: 8,
-    type: "working-paper",
-    typeLabel: "Working Paper",
-    topic: "economy",
-    date: "Mar 2025",
-    title: "The Future of Work: Skill Gaps and Opportunities",
-    link: "/publications/future-of-work",
-    description: "Identifying critical skill gaps in the current workforce and proposing educational reforms to better prepare youth for future job markets.",
-    author: "Economic Research Team",
-    imageSeed: "report8"
-  },
-  {
-    id: 9,
-    type: "data-analysis",
-    typeLabel: "Data Analysis",
-    topic: "education",
-    date: "Feb 2025",
-    title: "Mental Health Trends Among University Students",
-    link: "/publications/mental-health-trends",
-    description: "A quantitative study on the rising rates of anxiety and depression among university students and the availability of support services.",
-    author: "Youth Wellbeing Initiative",
-    imageSeed: "report9"
-  },
-  {
-    id: 10,
-    type: "issue-brief",
-    typeLabel: "Issue Brief",
-    topic: "technology",
-    date: "Jan 2025",
-    title: "Digital Divide: Internet Access in Rural India",
-    link: "/publications/digital-divide",
-    description: "Analyzing the ongoing challenges of internet connectivity in rural areas and its impact on educational and economic opportunities.",
-    author: "Tech Policy Group",
-    imageSeed: "report10"
-  },
-  {
-    id: 11,
-    type: "white-paper",
-    typeLabel: "White Paper",
-    topic: "governance",
-    date: "Dec 2024",
-    title: "Sustainable Urban Planning and Youth Inclusion",
-    link: "/publications/sustainable-urban-planning",
-    description: "Exploring how urban planning can be more inclusive of youth perspectives to create sustainable and livable cities.",
-    author: "Urban Development Desk",
-    imageSeed: "report11"
-  },
-  {
-    id: 12,
-    type: "policy-brief",
-    typeLabel: "Policy Brief",
-    topic: "governance",
-    date: "Nov 2024",
-    title: "Reforming the Juvenile Justice System",
-    link: "/publications/juvenile-justice-reform",
-    description: "A critical review of the current juvenile justice system with recommendations for a more rehabilitative approach.",
-    author: "Legal Research Team",
-    imageSeed: "report12"
   }
 ];
 
+function ensureDataFile() {
+  const dir = path.dirname(dataFilePath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  if (!fs.existsSync(dataFilePath)) {
+    fs.writeFileSync(dataFilePath, JSON.stringify(defaultPublicationsData, null, 2));
+  }
+}
+
 export async function GET() {
-  // Simulate network delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  
-  return NextResponse.json(publicationsData);
+  try {
+    ensureDataFile();
+    const data = fs.readFileSync(dataFilePath, 'utf8');
+    return NextResponse.json(JSON.parse(data));
+  } catch (error) {
+    return NextResponse.json(defaultPublicationsData);
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    ensureDataFile();
+    const body = await request.json();
+    const currentData = JSON.parse(fs.readFileSync(dataFilePath, 'utf8'));
+    
+    const newPub = {
+      ...body,
+      id: Date.now()
+    };
+    
+    currentData.unshift(newPub);
+    fs.writeFileSync(dataFilePath, JSON.stringify(currentData, null, 2));
+    
+    return NextResponse.json({ success: true, publication: newPub });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to add publication' }, { status: 500 });
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    ensureDataFile();
+    const body = await request.json();
+    const currentData = JSON.parse(fs.readFileSync(dataFilePath, 'utf8'));
+    
+    const index = currentData.findIndex((p: any) => p.id === body.id);
+    if (index !== -1) {
+      currentData[index] = { ...currentData[index], ...body };
+      fs.writeFileSync(dataFilePath, JSON.stringify(currentData, null, 2));
+      return NextResponse.json({ success: true, publication: currentData[index] });
+    }
+    return NextResponse.json({ error: 'Publication not found' }, { status: 404 });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to update publication' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = parseInt(searchParams.get('id') || '0');
+    
+    ensureDataFile();
+    const currentData = JSON.parse(fs.readFileSync(dataFilePath, 'utf8'));
+    
+    const newData = currentData.filter((p: any) => p.id !== id);
+    fs.writeFileSync(dataFilePath, JSON.stringify(newData, null, 2));
+    
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to delete publication' }, { status: 500 });
+  }
 }

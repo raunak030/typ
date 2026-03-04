@@ -3,8 +3,12 @@ import Footer from '@/components/Footer';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Map, Users, Target, ArrowRight } from 'lucide-react';
+import { getSiteContent } from '@/lib/content';
 
 export default function StateChapters() {
+  const content = getSiteContent();
+  const pageContent = content.initiatives.stateChapters;
+
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
@@ -17,10 +21,10 @@ export default function StateChapters() {
               Initiatives
             </div>
             <h1 className="font-serif text-4xl font-bold tracking-tight text-white sm:text-5xl">
-              State Chapters
+              {pageContent.header.title}
             </h1>
             <p className="mt-6 text-lg text-slate-300">
-              Decentralized institutional presence ensuring regional representation and localized civic engagement across Indian states.
+              {pageContent.header.subtitle}
             </p>
           </div>
         </section>
@@ -40,12 +44,12 @@ export default function StateChapters() {
                 />
               </div>
               <div className="order-1 lg:order-2">
-                <h2 className="font-serif text-3xl font-bold text-slate-900 mb-6">Localizing National Discourse</h2>
+                <h2 className="font-serif text-3xl font-bold text-slate-900 mb-6">{pageContent.overview.title}</h2>
                 <p className="text-slate-600 leading-relaxed mb-6">
-                  India&apos;s diversity demands that national policy discussions be informed by regional realities. The Yuva Panchayat State Chapters serve as the crucial link between local civic issues and national policy frameworks.
+                  {pageContent.overview.content1}
                 </p>
                 <p className="text-slate-600 leading-relaxed mb-8">
-                  Operated by dedicated regional secretariats, these chapters conduct localized research, host state-level dialogues, and ensure that the unique perspectives of their respective states are represented at our national forums.
+                  {pageContent.overview.content2}
                 </p>
                 
                 <div className="space-y-6">

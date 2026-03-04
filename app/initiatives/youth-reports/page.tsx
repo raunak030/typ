@@ -3,8 +3,12 @@ import Footer from '@/components/Footer';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FileText, BarChart, Download, ArrowRight } from 'lucide-react';
+import { getSiteContent } from '@/lib/content';
 
 export default function YouthReports() {
+  const content = getSiteContent();
+  const pageContent = content.initiatives.youthReports;
+
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
@@ -17,10 +21,10 @@ export default function YouthReports() {
               Initiatives
             </div>
             <h1 className="font-serif text-4xl font-bold tracking-tight text-white sm:text-5xl">
-              Youth Reports
+              {pageContent.header.title}
             </h1>
             <p className="mt-6 text-lg text-slate-300">
-              Comprehensive, data-driven assessments of youth perspectives on governance, economy, and social policy.
+              {pageContent.header.subtitle}
             </p>
           </div>
         </section>
@@ -30,12 +34,12 @@ export default function YouthReports() {
           <div className="mx-auto max-w-7xl">
             <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center">
               <div>
-                <h2 className="font-serif text-3xl font-bold text-slate-900 mb-6">Empirical Data for Policy Action</h2>
+                <h2 className="font-serif text-3xl font-bold text-slate-900 mb-6">{pageContent.overview.title}</h2>
                 <p className="text-slate-600 leading-relaxed mb-6">
-                  The Yuva Panchayat Youth Reports are the definitive source for understanding the priorities, anxieties, and aspirations of India&apos;s largest demographic dividend. We move beyond anecdotal evidence to provide rigorous, survey-based insights.
+                  {pageContent.overview.content1}
                 </p>
                 <p className="text-slate-600 leading-relaxed mb-8">
-                  Our methodology involves stratified sampling across urban, semi-urban, and rural districts, ensuring that our findings accurately reflect the diverse realities of young Indians. These reports serve as foundational documents for policymakers, academics, and industry leaders.
+                  {pageContent.overview.content2}
                 </p>
                 
                 <div className="space-y-6">

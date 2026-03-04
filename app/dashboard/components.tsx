@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, FileText, Settings, LogOut, Bell } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, Settings, LogOut, Bell, Edit3 } from 'lucide-react';
 
 export function DashboardSidebar() {
   const pathname = usePathname();
@@ -11,6 +11,7 @@ export function DashboardSidebar() {
     { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
     { name: 'CRM / Contacts', href: '/dashboard/contacts', icon: Users },
     { name: 'Publications', href: '/dashboard/publications', icon: FileText },
+    { name: 'Content Management', href: '/dashboard/content', icon: Edit3 },
     { name: 'Settings', href: '/dashboard/settings', icon: Settings },
   ];
 
@@ -67,6 +68,7 @@ export function DashboardHeader() {
     { name: 'Overview', href: '/dashboard' },
     { name: 'CRM / Contacts', href: '/dashboard/contacts' },
     { name: 'Publications', href: '/dashboard/publications' },
+    { name: 'Content Management', href: '/dashboard/content' },
     { name: 'Settings', href: '/dashboard/settings' },
   ];
 

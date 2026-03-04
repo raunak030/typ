@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import ContactForm from './ContactForm';
+import SubscriptionForm from './SubscriptionForm';
 
 export default function Footer() {
   return (
@@ -46,6 +47,12 @@ export default function Footer() {
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">Contact Secretariat</h3>
             <p className="mb-4 text-sm">Send us your inquiries, partnership proposals, or feedback.</p>
             <ContactForm />
+            
+            <div className="mt-8">
+              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">Subscribe to Newsletter</h3>
+              <p className="text-sm">Stay updated with our latest initiatives and reports.</p>
+              <SubscriptionForm />
+            </div>
           </div>
         </div>
         

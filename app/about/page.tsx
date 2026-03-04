@@ -1,8 +1,12 @@
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
+import { getSiteContent } from '@/lib/content';
 
 export default function About() {
+  const content = getSiteContent();
+  const aboutContent = content.about;
+
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
@@ -12,10 +16,10 @@ export default function About() {
         <section className="bg-slate-950 px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
           <div className="mx-auto max-w-4xl text-center">
             <h1 className="font-serif text-4xl font-bold tracking-tight text-white sm:text-5xl">
-              About The Yuva Panchayat
+              {aboutContent.header.title}
             </h1>
             <p className="mt-6 text-lg text-slate-300">
-              Building the intellectual infrastructure for the next generation of Indian leadership.
+              {aboutContent.header.subtitle}
             </p>
           </div>
         </section>
@@ -24,9 +28,9 @@ export default function About() {
         <section className="bg-white px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
           <div className="mx-auto max-w-3xl">
             <div className="prose prose-slate prose-lg max-w-none">
-              <h2 className="font-serif text-3xl font-bold text-slate-900 mb-6">Our Mission</h2>
+              <h2 className="font-serif text-3xl font-bold text-slate-900 mb-6">{aboutContent.mission.title}</h2>
               <p className="text-slate-600 leading-relaxed mb-8">
-                The Yuva Panchayat was established with a singular vision: to elevate the quality of civic discourse among India&apos;s youth. In an era increasingly defined by polarization and emotional reaction, we provide a structured, non-partisan platform for rational dialogue, rigorous research, and evidence-based policy formulation.
+                {aboutContent.mission.content}
               </p>
 
               <div className="my-12 relative aspect-[21/9] w-full overflow-hidden bg-slate-200">
@@ -71,9 +75,9 @@ export default function About() {
                 </li>
               </ul>
 
-              <h2 className="font-serif text-3xl font-bold text-slate-900 mb-6">Institutional Structure</h2>
+              <h2 className="font-serif text-3xl font-bold text-slate-900 mb-6">{aboutContent.structure.title}</h2>
               <p className="text-slate-600 leading-relaxed mb-8">
-                Operating as a think tank and a national forum, The Yuva Panchayat is structured to ensure both deep research capabilities and broad geographic reach. Our National Secretariat coordinates the efforts of State Chapters, ensuring that localized issues receive national attention and that national policies are examined through regional lenses.
+                {aboutContent.structure.content}
               </p>
             </div>
           </div>

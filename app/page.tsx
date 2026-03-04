@@ -3,8 +3,31 @@ import Footer from '@/components/Footer';
 import Link from 'next/link';
 import { ArrowRight, BookOpen, Globe, Users, FileText, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
+import { getSiteContent } from '@/lib/content';
 
-export default function Home() {
+async function getLatestPublications() {
+  try {
+    // In a real app, this would fetch from a database or use an absolute URL
+    // For this environment, we can read the file directly or use a helper
+    const fs = require('fs');
+    const path = require('path');
+    const dataFilePath = path.join(process.cwd(), 'data', 'publications.json');
+    if (fs.existsSync(dataFilePath)) {
+      const data = fs.readFileSync(dataFilePath, 'utf8');
+      const pubs = JSON.parse(data);
+      return pubs.slice(0, 3);
+    }
+  } catch (error) {
+    console.error('Failed to load publications for home page', error);
+  }
+  return [];
+}
+
+export default async function Home() {
+  const content = getSiteContent();
+  const homeContent = content.home;
+  const latestPublications = await getLatestPublications();
+
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
@@ -28,27 +51,27 @@ export default function Home() {
           <div className="relative z-10 mx-auto max-w-7xl">
             <div className="max-w-3xl">
               <div className="mb-6 inline-flex items-center rounded-full border border-slate-700 bg-slate-800/50 px-3 py-1 text-xs font-medium uppercase tracking-widest text-slate-300 backdrop-blur-sm">
-                A National Youth Dialogue Platform
+                {homeContent.hero.tagline}
               </div>
               <h1 className="font-serif text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
-                Rational Civic Discussion for India&apos;s Future
+                {homeContent.hero.title}
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-300 sm:text-xl">
-                The Yuva Panchayat is a non-political, non-partisan, and idea-driven institution promoting structured dialogue over emotional reaction. We build the intellectual infrastructure for the next generation of Indian leadership.
+                {homeContent.hero.description}
               </p>
               <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
                 <Link
-                  href="/about"
+                  href={homeContent.hero.primaryCtaLink}
                   className="inline-flex items-center justify-center gap-2 rounded-sm bg-white px-6 py-3.5 text-sm font-medium text-slate-950 transition-colors hover:bg-slate-200"
                 >
-                  Read Our Mission
+                  {homeContent.hero.primaryCtaText}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
-                  href="/publications"
+                  href={homeContent.hero.secondaryCtaLink}
                   className="inline-flex items-center justify-center gap-2 rounded-sm border border-slate-700 bg-transparent px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-slate-800"
                 >
-                  Explore Publications
+                  {homeContent.hero.secondaryCtaText}
                 </Link>
               </div>
             </div>
@@ -60,10 +83,10 @@ export default function Home() {
           <div className="mx-auto max-w-7xl">
             <div className="mb-16 max-w-3xl">
               <h2 className="font-serif text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-                Institutional Framework
+                {homeContent.pillars.title}
               </h2>
               <p className="mt-4 text-lg text-slate-600">
-                Our initiatives are designed to foster rigorous debate, comprehensive research, and actionable policy recommendations across the nation.
+                {homeContent.pillars.description}
               </p>
             </div>
 
@@ -148,110 +171,41 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-              {/* Publication 1 */}
-              <article className="group flex flex-col bg-white border border-slate-200 transition-shadow hover:shadow-md">
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-200">
-                  <Image
-                    src="https://picsum.photos/seed/report1/800/600?grayscale"
-                    alt="Report cover"
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-                <div className="flex flex-1 flex-col p-6">
-                  <div className="mb-3 flex items-center gap-3 text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    <span>Policy Brief</span>
-                    <span className="h-1 w-1 rounded-full bg-slate-300"></span>
-                    <span>Oct 2025</span>
+              {latestPublications.map((pub: any) => (
+                <article key={pub.id} className="group flex flex-col bg-white border border-slate-200 transition-shadow hover:shadow-md">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-200">
+                    <Image
+                      src={`https://picsum.photos/seed/${pub.imageSeed}/800/600?grayscale`}
+                      alt="Report cover"
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 33vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      referrerPolicy="no-referrer"
+                    />
                   </div>
-                  <h3 className="mb-3 font-serif text-xl font-bold leading-tight text-slate-900 group-hover:underline">
-                    <Link href="/publications/civic-engagement-report-2025">
-                      The State of Youth Civic Engagement in Urban India
-                    </Link>
-                  </h3>
-                  <p className="mb-6 flex-1 text-sm text-slate-600 line-clamp-3">
-                    An empirical analysis of political participation, institutional trust, and civic awareness among urban youth demographics across tier-1 and tier-2 cities.
-                  </p>
-                  <div className="flex items-center gap-3 border-t border-slate-100 pt-4">
-                    <div className="h-8 w-8 rounded-full bg-slate-200 overflow-hidden relative">
-                      <Image src="https://picsum.photos/seed/author1/100/100?grayscale" alt="Author" fill sizes="32px" className="object-cover" referrerPolicy="no-referrer" />
+                  <div className="flex flex-1 flex-col p-6">
+                    <div className="mb-3 flex items-center gap-3 text-xs font-medium text-slate-500 uppercase tracking-wider">
+                      <span>{pub.typeLabel}</span>
+                      <span className="h-1 w-1 rounded-full bg-slate-300"></span>
+                      <span>{pub.date}</span>
                     </div>
-                    <span className="text-sm font-medium text-slate-900">Dr. Siddharth Menon</span>
-                  </div>
-                </div>
-              </article>
-
-              {/* Publication 2 */}
-              <article className="group flex flex-col bg-white border border-slate-200 transition-shadow hover:shadow-md">
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-200">
-                  <Image
-                    src="https://picsum.photos/seed/report2/800/600?grayscale"
-                    alt="Report cover"
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-                <div className="flex flex-1 flex-col p-6">
-                  <div className="mb-3 flex items-center gap-3 text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    <span>Working Paper</span>
-                    <span className="h-1 w-1 rounded-full bg-slate-300"></span>
-                    <span>Sep 2025</span>
-                  </div>
-                  <h3 className="mb-3 font-serif text-xl font-bold leading-tight text-slate-900 group-hover:underline">
-                    <Link href="/publications/economic-mobility-framework">
-                      Frameworks for Economic Mobility in the Digital Age
-                    </Link>
-                  </h3>
-                  <p className="mb-6 flex-1 text-sm text-slate-600 line-clamp-3">
-                    Examining the intersection of digital literacy, gig economy structures, and long-term economic security for young professionals entering the workforce.
-                  </p>
-                  <div className="flex items-center gap-3 border-t border-slate-100 pt-4">
-                    <div className="h-8 w-8 rounded-full bg-slate-200 overflow-hidden relative">
-                      <Image src="https://picsum.photos/seed/author2/100/100?grayscale" alt="Author" fill sizes="32px" className="object-cover" referrerPolicy="no-referrer" />
+                    <h3 className="mb-3 font-serif text-xl font-bold leading-tight text-slate-900 group-hover:underline">
+                      <Link href={pub.link}>
+                        {pub.title}
+                      </Link>
+                    </h3>
+                    <p className="mb-6 flex-1 text-sm text-slate-600 line-clamp-3">
+                      {pub.description}
+                    </p>
+                    <div className="flex items-center gap-3 border-t border-slate-100 pt-4">
+                      <div className="h-8 w-8 rounded-full bg-slate-200 overflow-hidden relative">
+                        <Image src={`https://picsum.photos/seed/author${pub.id}/100/100?grayscale`} alt="Author" fill sizes="32px" className="object-cover" referrerPolicy="no-referrer" />
+                      </div>
+                      <span className="text-sm font-medium text-slate-900">{pub.author}</span>
                     </div>
-                    <span className="text-sm font-medium text-slate-900">Priya Sharma, MPP</span>
                   </div>
-                </div>
-              </article>
-
-              {/* Publication 3 */}
-              <article className="group flex flex-col bg-white border border-slate-200 transition-shadow hover:shadow-md">
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-200">
-                  <Image
-                    src="https://picsum.photos/seed/report3/800/600?grayscale"
-                    alt="Report cover"
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-                <div className="flex flex-1 flex-col p-6">
-                  <div className="mb-3 flex items-center gap-3 text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    <span>Annual Report</span>
-                    <span className="h-1 w-1 rounded-full bg-slate-300"></span>
-                    <span>Aug 2025</span>
-                  </div>
-                  <h3 className="mb-3 font-serif text-xl font-bold leading-tight text-slate-900 group-hover:underline">
-                    <Link href="/publications/national-youth-report-2025">
-                      The National Youth Report 2025: Priorities & Perspectives
-                    </Link>
-                  </h3>
-                  <p className="mb-6 flex-1 text-sm text-slate-600 line-clamp-3">
-                    Our flagship annual publication synthesizing data from over 50,000 respondents across 28 states, outlining key policy priorities for the upcoming legislative session.
-                  </p>
-                  <div className="flex items-center gap-3 border-t border-slate-100 pt-4">
-                    <div className="h-8 w-8 rounded-full bg-slate-200 overflow-hidden relative">
-                      <Image src="https://picsum.photos/seed/author3/100/100?grayscale" alt="Author" fill sizes="32px" className="object-cover" referrerPolicy="no-referrer" />
-                    </div>
-                    <span className="text-sm font-medium text-slate-900">The Yuva Panchayat Research Desk</span>
-                  </div>
-                </div>
-              </article>
+                </article>
+              ))}
             </div>
           </div>
         </section>
@@ -260,23 +214,23 @@ export default function Home() {
         <section className="bg-slate-900 px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
           <div className="mx-auto max-w-4xl text-center">
             <h2 className="font-serif text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              Join the Dialogue
+              {homeContent.cta.title}
             </h2>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-300">
-              We are building a network of thoughtful, informed, and dedicated young leaders. Become a member to participate in state chapters, access exclusive research, and attend national conferences.
+              {homeContent.cta.description}
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
-                href="/join"
+                href={homeContent.cta.primaryCtaLink}
                 className="inline-flex w-full items-center justify-center rounded-sm bg-white px-8 py-4 text-sm font-medium text-slate-950 transition-colors hover:bg-slate-200 sm:w-auto"
               >
-                Apply for Membership
+                {homeContent.cta.primaryCtaText}
               </Link>
               <Link
-                href="/contact"
+                href={homeContent.cta.secondaryCtaLink}
                 className="inline-flex w-full items-center justify-center rounded-sm border border-slate-700 bg-transparent px-8 py-4 text-sm font-medium text-white transition-colors hover:bg-slate-800 sm:w-auto"
               >
-                Contact the Secretariat
+                {homeContent.cta.secondaryCtaText}
               </Link>
             </div>
           </div>

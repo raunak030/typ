@@ -3,8 +3,12 @@ import Footer from '@/components/Footer';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Calendar, MapPin, Users, ArrowRight } from 'lucide-react';
+import { getSiteContent } from '@/lib/content';
 
 export default function NationalConferences() {
+  const content = getSiteContent();
+  const pageContent = content.initiatives.nationalConferences;
+
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
@@ -17,10 +21,10 @@ export default function NationalConferences() {
               Initiatives
             </div>
             <h1 className="font-serif text-4xl font-bold tracking-tight text-white sm:text-5xl">
-              National Conferences
+              {pageContent.header.title}
             </h1>
             <p className="mt-6 text-lg text-slate-300">
-              Our flagship summits bringing together youth leaders, policymakers, and academics to deliberate on critical national issues.
+              {pageContent.header.subtitle}
             </p>
           </div>
         </section>
@@ -30,12 +34,12 @@ export default function NationalConferences() {
           <div className="mx-auto max-w-7xl">
             <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center">
               <div>
-                <h2 className="font-serif text-3xl font-bold text-slate-900 mb-6">The Premier Forum for Youth Policy Dialogue</h2>
+                <h2 className="font-serif text-3xl font-bold text-slate-900 mb-6">{pageContent.overview.title}</h2>
                 <p className="text-slate-600 leading-relaxed mb-6">
-                  The Yuva Panchayat National Conferences are not typical youth summits. They are rigorous, multi-day policy formulation exercises designed to bridge the gap between young citizens and institutional decision-makers.
+                  {pageContent.overview.content1}
                 </p>
                 <p className="text-slate-600 leading-relaxed mb-8">
-                  Each conference focuses on a specific thematic area—ranging from economic mobility to climate resilience—and culminates in a formal policy document presented to relevant government ministries and legislative committees.
+                  {pageContent.overview.content2}
                 </p>
                 <div className="grid grid-cols-2 gap-6 border-t border-slate-200 pt-8">
                   <div>
